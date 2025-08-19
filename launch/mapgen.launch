@@ -1,13 +1,40 @@
+<!-- 
+    ERASOR 地图生成启动文件
+    功能：启动KITTI数据集地图生成器
+    作者：ERASOR团队
+    描述：该文件用于从KITTI数据集的rosbag文件生成点云地图
+-->
 <launch>
 
-<node name="kitti_mapgen" pkg="erasor" type="kitti_mapgen" output="screen">
-    <rosparam param="/map/voxelsize">0.2</rosparam>		
-    <rosparam param="/map/target_rosbag">"05_2350_to_2670_w_interval_2_node.bag"</rosparam>
-    <rosparam param="/map/save_path">"/media/shapelim/UX960NVMe1/deep_express/kitti_rosbag"</rosparam>
-    <rosparam param="/map/viz_interval">1</rosparam>
-    <rosparam param="/large_scale/is_large_scale">true</rosparam>
-</node>
+    <!-- KITTI地图生成器节点 -->
+    <!-- 负责从KITTI数据集的rosbag文件中提取点云数据并生成地图 -->
+    <node name="kitti_mapgen" pkg="erasor" type="kitti_mapgen" output="screen">
+        <!-- 体素化参数 -->
+        <!-- 设置点云体素化的网格大小，单位：米 -->
+        <rosparam param="/map/voxelsize">0.2</rosparam>
+        
+        <!-- 目标rosbag文件 -->
+        <!-- 指定要处理的KITTI数据集rosbag文件名 -->
+        <!-- 格式：序列号_起始帧_to_结束帧_w_interval_间隔_node.bag -->
+        <rosparam param="/map/target_rosbag">"05_2350_to_2670_w_interval_2_node.bag"</rosparam>
+        
+        <!-- 地图保存路径 -->
+        <!-- 指定生成的地图文件保存的目录路径 -->
+        <!-- <rosparam param="/map/save_path">"/media/shapelim/UX960NVMe1/deep_express/kitti_rosbag"</rosparam> -->
+        <!-- <rosparam param="/map/save_path">"/mnt/c/Users/Greary/Documents/rosbag/Examdata/dynamic_remove_evo"</rosparam> -->
+        <rosparam param="/map/save_path">"/home/john/erasor_maps"</rosparam>
+        
+        <!-- 可视化间隔 -->
+        <!-- 设置可视化更新的帧间隔，1表示每帧都更新显示 -->
+        <rosparam param="/map/viz_interval">1</rosparam>
+        
+        <!-- 大规模地图处理模式 -->
+        <!-- 启用大规模地图处理，适用于大型数据集 -->
+        <rosparam param="/large_scale/is_large_scale">true</rosparam>
+    </node>
 
-<node name="rviz" pkg="rviz" type="rviz" args="-d $(find erasor)/rviz/kitti_mapgen.rviz"/>
+    <!-- RViz可视化节点 -->
+    <!-- 用于实时显示地图生成过程和结果 -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find erasor)/rviz/kitti_mapgen.rviz"/>
 
 </launch>

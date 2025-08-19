@@ -1,28 +1,62 @@
+<!-- 
+    ERASOR 主启动文件
+    功能：启动ERASOR动态对象移除系统的主要组件
+    作者：ERASOR团队
+    描述：该文件用于启动离线地图更新器、可视化工具和加载相应的配置文件
+-->
 <launch>
 
-<node name="offline_map_updater" pkg="erasor" type="offline_map_updater" output="screen">
-    <rosparam param="/large_scale/is_large_scale">true</rosparam>
-    <rosparam param="/large_scale/submap_size">160.0</rosparam>
-</node>
-<node name="rviz" pkg="rviz" type="rviz" args="-d $(find erasor)/rviz/erasor_map.rviz"/>
-<node name="rviz_body" pkg="rviz" type="rviz" args="-d $(find erasor)/rviz/srt.rviz"/>
+    <!-- 仿真时间戳参数配置 -->
+    <!-- 用于控制ROS系统是否使用仿真时间而非系统时间 -->
+    <arg name="use_sim_time" default="true" doc="是否使用仿真时间戳，true表示使用仿真时间，false表示使用系统时间"/>
+    <param name="/use_sim_time" value="$(arg use_sim_time)"/>
 
-<arg name="target_seq" default="05"/>
-<group if="$(eval arg('target_seq') ==00)">
-    <rosparam command="load" file="$(find erasor)/config/seq_00.yaml" />
-</group>
-<group if="$(eval arg('target_seq') ==01)">
-    <rosparam command="load" file="$(find erasor)/config/seq_01.yaml" />
-</group>
-<group if="$(eval arg('target_seq') ==02)">
-    <rosparam command="load" file="$(find erasor)/config/seq_02.yaml" />
-</group>
-<group if="$(eval arg('target_seq') ==05)">
-    <rosparam command="load" file="$(find erasor)/config/seq_05.yaml" />
-</group>
-<group if="$(eval arg('target_seq') ==07)">
-    <rosparam command="load" file="$(find erasor)/config/seq_07.yaml" />
-</group>
+    <!-- ERASOR离线地图更新器节点 -->
+    <!-- 这是ERASOR系统的核心节点，负责动态对象检测和地图更新 -->
+    <node name="offline_map_updater" pkg="erasor" type="offline_map_updater" output="screen">
+        <!-- 大规模地图处理参数 -->
+        <rosparam param="/large_scale/is_large_scale">true</rosparam>  <!-- 启用大规模地图处理模式 -->
+        <rosparam param="/large_scale/submap_size">160.0</rosparam>    <!-- 子地图大小，单位：米 -->
+    </node>
+    
+    <!-- RViz可视化节点 - 主地图显示 -->
+    <!-- 用于显示ERASOR处理后的地图结果 -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find erasor)/rviz/erasor_map.rviz"/>
+    
+    <!-- RViz可视化节点 - 车体坐标系显示 -->
+    <!-- 用于显示车体相关的可视化信息 -->
+    <node name="rviz_body" pkg="rviz" type="rviz" args="-d $(find erasor)/rviz/srt.rviz"/>
 
+    <!-- 目标序列参数 -->
+    <!-- 用于指定要处理的KITTI数据集序列号，默认为序列05 -->
+    <arg name="target_seq" default="05"/>
+    
+    <!-- 根据目标序列加载相应的配置文件 -->
+    <!-- 每个序列都有对应的YAML配置文件，包含该序列特定的参数设置 -->
+    
+    <!-- KITTI序列00的配置 -->
+    <group if="$(eval arg('target_seq') =='00')">
+        <rosparam command="load" file="$(find erasor)/config/seq_00.yaml" />
+    </group>
+    
+    <!-- KITTI序列01的配置 -->
+    <group if="$(eval arg('target_seq') =='01')">
+        <rosparam command="load" file="$(find erasor)/config/seq_01.yaml" />
+    </group>
+    
+    <!-- KITTI序列02的配置 -->
+    <group if="$(eval arg('target_seq') =='02')">
+        <rosparam command="load" file="$(find erasor)/config/seq_02.yaml" />
+    </group>
+    
+    <!-- KITTI序列05的配置（默认） -->
+    <group if="$(eval arg('target_seq') =='05')">
+        <rosparam command="load" file="$(find erasor)/config/seq_05.yaml" />
+    </group>
+    
+    <!-- KITTI序列07的配置 -->
+    <group if="$(eval arg('target_seq') =='07')">
+        <rosparam command="load" file="$(find erasor)/config/seq_07.yaml" />
+    </group>
 
 </launch>
